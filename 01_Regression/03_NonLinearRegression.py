@@ -1,0 +1,214 @@
+# Non-linear regression
+# to model non-lenear relationship between the dependent variable and a set of independet variables
+# Higher polinomails:   y^(X1) = theta_0 + theta_1*X1 + theta_2*X1^2 +...
+# Exponential function: y^(X1) = theta_0 + theta_1*theta_2^X1   (X is independent variable and Y is the dependent variable)
+# logarithmic:          y^(X1) = log(theta_0 + theta_1*X1)
+#
+# y^ must be a non-linear function of a the parameter theta, not necessarily the features X
+# NOTE: Higher polinomals approximation is a special case of linear regration
+# y^(X1) = theta_0 + theta_1*X1 + theta_2*X1^2 + theta_3*X1^3 + theta_4*X1^4
+# y^(X1) = theta_0 + theta_1*X1 + theta_2*X2 + theta_3*X3 + theta_4*X4         (X2=X1^2, X3=X1^3, X4=X1^4)
+#
+# Important to pick a regression that fits the data the best
+#       To know this:
+#                   Inspect visually
+#                   Correlation coefficient between independent and dependent variables and if for all variables it is 0.7 or higher there is a linear tendency.
+
+## START: Initializing Packages
+import matplotlib.pyplot as plt    # for plotting routines
+import numpy as np
+import scipy as sp
+import pandas as pd
+import pylab as pl
+from sklearn import linear_model
+## END: Initializing Packages
+
+
+#####################################
+# Linear
+ax = plt.subplot(2,3, 1)
+x = np.arange(-5.0, 5.0, 0.1)
+
+##You can adjust the slope and intercept to verify the changes in the graph
+y = 2*(x) + 3
+y_noise = 2 * np.random.normal(size=x.size)
+ydata = y + y_noise
+#plt.figure(figsize=(8,6))
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+# plt.show()
+
+#####################################
+# Cubic
+ax = plt.subplot(2,3, 2)
+x = np.arange(-5.0, 5.0, 0.1)
+
+##You can adjust the slope and intercept to verify the changes in the graph
+y = 1*(x**3) + 1*(x**2) + 1*x + 3
+y_noise = 20 * np.random.normal(size=x.size)
+ydata = y + y_noise
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+# plt.show()
+
+#####################################
+# quadratic
+ax = plt.subplot(2,3, 3)
+x = np.arange(-5.0, 5.0, 0.1)
+
+##You can adjust the slope and intercept to verify the changes in the graph
+
+y = np.power(x,2)
+y_noise = 2 * np.random.normal(size=x.size)
+ydata = y + y_noise
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+
+#####################################
+# exponential
+ax = plt.subplot(2,3, 4)
+x = np.arange(-5.0, 5.0, 0.1)
+
+##You can adjust the slope and intercept to verify the changes in the graph
+
+y= np.exp(x)
+y_noise = 2 * np.random.normal(size=x.size)
+ydata = y + y_noise
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+
+#####################################
+# logarithmic
+ax = plt.subplot(2,3, 5)
+x = np.arange(-5.0, 5.0, 0.1)
+
+y = np.log(y)
+y_noise = 2 * np.random.normal(size=x.size)
+ydata = y + y_noise
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+# plt.show()
+
+#####################################
+# logarithmic
+ax = plt.subplot(2,3, 6)
+x = np.arange(-5.0, 5.0, 0.1)
+
+
+y = 1-4/(1+np.power(3, x-2))
+y_noise = 2 * np.random.normal(size=x.size)
+ydata = y + y_noise
+plt.plot(x, ydata,  'bo')
+plt.plot(x,y, 'r')
+plt.ylabel('Dependent Variable')
+plt.xlabel('Indepdendent Variable')
+plt.show()
+
+
+#####################################################
+#downloading dataset
+df = pd.read_csv("china_gdp.csv")
+df.head(10)
+
+# plt.figure(figsize=(8,5))
+x_data, y_data = (df["Year"].values, df["Value"].values)
+# plt.plot(x_data, y_data, 'ro')
+# plt.ylabel('GDP')
+# plt.xlabel('Year')
+# plt.show()
+
+## Choosing a model
+X = np.arange(-5.0, 5.0, 0.1)
+Y = 1.0 / (1.0 + np.exp(-X))
+
+# plt.plot(X,Y)
+# plt.ylabel('Dependent Variable')
+# plt.xlabel('Indepdendent Variable')
+# plt.show()
+
+def sigmoid(x, Beta_1, Beta_2):
+     y = 1 / (1 + np.exp(-Beta_1*(x-Beta_2)))
+     return y
+
+beta_1 = 0.10
+beta_2 = 1990.0
+
+#logistic function
+Y_pred = sigmoid(x_data, beta_1 , beta_2)
+
+#plot initial prediction against datapoints
+plt.plot(x_data, Y_pred*15000000000000.)
+plt.plot(x_data, y_data, 'ro')
+
+
+# Lets normalize our data
+xdata =x_data/max(x_data)
+ydata =y_data/max(y_data)
+
+# fitting the coefficient to the data
+popt, pcov = sp.optimize.curve_fit(sigmoid, xdata, ydata)
+#print the final parameters
+print(" beta_1 = %f, beta_2 = %f" % (popt[0], popt[1]))
+
+x = np.linspace(1960, 2015, 55)
+x = x/max(x)
+plt.figure(figsize=(8,5))
+y = sigmoid(x, *popt)
+plt.plot(xdata, ydata, 'ro', label='data')
+plt.plot(x,y, linewidth=3.0, label='fit')
+plt.legend(loc='best')
+plt.ylabel('GDP')
+plt.xlabel('Year')
+plt.show()
+
+##################################################################
+#       Regresion accuracy
+#
+# Error of the model is the difference between the data points and the trend line generated by the algorithm
+# How to measure error:
+#       Mean Absolute error: is the mean of the absolute value of the error MAE = 1/n SUM from i=1 to N |y_i - y^_i|
+#       Mean Squared error: is the mean of the squared value of the error MSE = 1/n SUM from i=1 to N (y_i - y^_i)^2
+#       Root Mean Squared error: is the root mean of the squared value of the error RMSE = (1/n SUM from i=1 to N (y_i - y^_i)^2)^1/2
+#       Relative Absolute error: takes the MAE and normalized it by the distance to the average RAE = (SUM from i=1 to N |y_i - y^_i|)/(SUM from i=1 to N |y_i - y_avg|)
+#       Relative Squared error: takes the MSE and normalized it by the squared distance to the average RSE = (SUM from i=1 to N (y_i - y^_i)^2)/(SUM from i=1 to N (y_i - y_avg)^2)
+#           R^2 = 1 -  RSE (R-squared)
+from sklearn.metrics import *
+n= len(y)
+MAE= mean_absolute_error(ydata, y)
+MSE= mean_squared_error(ydata, y)
+RMSE = np.sqrt(MSE)
+RAE = MAE / mean_absolute_error(ydata, np.average(y)*np.ones(n))
+RSE = MSE / mean_squared_error(ydata, np.average(y)*np.ones(n))
+
+
+print(" Mean Absolute error = %f, Mean Squared error = %f, Root Mean Squared error = %f, Relative Absolute error = %f, Relative Squared error = %f, R^2 = %f" % (MAE, MSE, RMSE, RAE, RSE, 1-RSE))
+
+
+# split data into train/test
+msk = np.random.rand(len(df)) < 0.8
+train_x = xdata[msk]
+test_x = xdata[~msk]
+train_y = ydata[msk]
+test_y = ydata[~msk]
+
+# build the model using train set
+popt, pcov = curve_fit(sigmoid, train_x, train_y)
+
+# predict using test set
+y_hat = sigmoid(test_x, *popt)
+
+# evaluation
+print("Mean absolute error: %.2f" % np.mean(np.absolute(y_hat - test_y)))
+print("Residual sum of squares (MSE): %.2f" % np.mean((y_hat - test_y) ** 2))
+from sklearn.metrics import r2_score
+print("R2-score: %.2f" % r2_score(y_hat , test_y) )
