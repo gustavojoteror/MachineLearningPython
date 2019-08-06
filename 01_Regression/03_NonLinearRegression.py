@@ -202,7 +202,7 @@ train_y = ydata[msk]
 test_y = ydata[~msk]
 
 # build the model using train set
-popt, pcov = curve_fit(sigmoid, train_x, train_y)
+popt, pcov = sp.optimize.curve_fit(sigmoid, train_x, train_y)
 
 # predict using test set
 y_hat = sigmoid(test_x, *popt)
