@@ -48,6 +48,11 @@ FN = 1
 FP = 9
 TP = 6
 print ('total number of f1score = %f, precision = %f , recall = %f, accuracy = %f' % f1score(TN,FN,TP,FP))
+#   3. Log Loss: for when the classifier gives the probability to get the class label, this evaluation measures the probability for
+# for each prediction. So if the labels are 0 and 1 then the results is a value between 0 and 1. So if we predict a value of 0.13 and the
+# actual label is 1 then the approximation is bad and we have a high log loss.
+# log loss equation: (y * log(y^) + (1-y)*log(1-y^))
+# total log loss of the classifier: sum(logLoss)/n (the smaller the better)
+def logloss(y, yhat):
+    return (y * log(yhat) + (1-y)*log(1-yhat))
 
-
-#   3. Log Loss

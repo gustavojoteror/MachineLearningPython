@@ -16,7 +16,85 @@
 #   2. Calculate the distance of unknown case from all cases
 #   3. select the k-observations in the trainin data that are "nearest" to the unknwoen data points
 #   4. Predict the response of the unknwon data point using the most popular response value from the k-nearest neighbors
+import itertools
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
+import pandas as pd
+import numpy as np
+import matplotlib.ticker as ticker
+from sklearn import preprocessing
 
+# using pandas to read the dataset
+df = pd.read_csv('teleCust1000t.csv')
+print(df.head())   # to check the data set and the name of the columns
+#region  tenure  age  marital  address  income  ed  employ  retire  gender  reside  custcat
+print(df['custcat'].value_counts())  # counts the number of time each instance is in that column
+#df.hist(column='income', bins=50)
+X = df[['region', 'tenure','age', 'marital', 'address', 'income', 'ed', 'employ','retire', 'gender', 'reside']] .values  #.astype(float)
+y = df['custcat'].values
+print(X[0:5])
+print(y[0:5])
+
+
+# Data standardization give data zero mean and unit variance, it is good practie, especially for algorithms such as KNN
+# which are based on distance fo cases
+X = preprocessing.StandardScaler().fit(X).transform(X.astype(float))
+print(X[0:5])
+
+
+# let train and test the model by splitting the data
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split( X, y, test_size=0.2, random_state=4)
+print ('Train set:', X_train.shape,  y_train.shape)
+print ('Test set:', X_test.shape,  y_test.shape)
+
+#####################
+# importing knn model from sklearn
+from sklearn.neighbors import KNeighborsClassifier
+
+k = 4   # number of neighbors
+#Train Model and Predict
+neigh = KNeighborsClassifier(n_neighbors = k).fit(X_train,y_train)
+print(neigh)
+
+# predicting now
+yhat = neigh.predict(X_test)
+print(yhat[0:5])
+
+#####################
+# check the accuracy of the model
+from sklearn import metrics
+# we are using a function jaccard_similarity_score function.
+# it calcualtes how closely the actual lables and predicted lavels are matched in the test set
+print("Accuracy of the classifier on the Train data: ", metrics.accuracy_score(y_train, neigh.predict(X_train)))
+print("Accuracy of the classifier on the Test data:  ", metrics.accuracy_score(y_test, yhat))
+
+# but which value of k is the best? Let's check that
+Ks = 100
+mean_acc = np.zeros((Ks - 1))
+std_acc = np.zeros((Ks - 1))
+ConfustionMx = [];
+for n in range(1, Ks):
+    # Train Model and Predict
+    neigh = KNeighborsClassifier(n_neighbors=n).fit(X_train, y_train)
+    yhat = neigh.predict(X_test)
+    mean_acc[n - 1] = metrics.accuracy_score(y_test, yhat)
+
+    std_acc[n - 1] = np.std(yhat == y_test) / np.sqrt(yhat.shape[0])
+
+print(mean_acc)
+
+# plot model accuracy a a function of the number of neighbors
+plt.plot(range(1,Ks),mean_acc,'g')
+plt.fill_between(range(1,Ks),mean_acc - 1 * std_acc,mean_acc + 1 * std_acc, alpha=0.10)
+plt.legend(('Accuracy ', '+/- 3xstd'))
+plt.ylabel('Accuracy ')
+plt.xlabel('Number of Nabors (K)')
+plt.tight_layout()
+plt.show()
+
+print( "The best accuracy was with", mean_acc.max(), "with k=", mean_acc.argmax()+1)
 
 
 
