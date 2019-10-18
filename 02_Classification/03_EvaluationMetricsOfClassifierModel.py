@@ -53,6 +53,10 @@ print ('total number of f1score = %f, precision = %f , recall = %f, accuracy = %
 # actual label is 1 then the approximation is bad and we have a high log loss.
 # log loss equation: (y * log(y^) + (1-y)*log(1-y^))
 # total log loss of the classifier: sum(logLoss)/n (the smaller the better)
+# A classifier with lower log loss has better accuracy.
+
 def logloss(y, yhat):
     return (y * log(yhat) + (1-y)*log(1-yhat))
 
+# Which of the following matrices can be used to show the results of model accuracy evaluation or the model’s ability
+# to correctly predict or separate the classes? Confusion matrix

@@ -30,7 +30,7 @@
 #   4. Go to each branch and go back to step 1 for a difference attribute.
 #
 # Decision trees are built using recursive partitioning to classify the data
-# The choice of attributes to split the data is very important and it is all bout purity of the leaves after the split.
+# The choice of attributes to split the data is very important and it is all about purity of the leaves after the split.
 # A node in a tree is considered pure if, in a 100% cases the nodes fall into a specific category of a the target field.
 # The impurity of nodes is calculated by entropy of data in the node. Entropy measures the randomness or uncertainty in the data.
 #   For example: pure data: Node in a tree : (drugA 10, drugB 0),  Low Entropy (drugA 1, drugB 8), High Entropy (drugA 3, drugB 5)
@@ -55,6 +55,7 @@ print(entropy)
 # splitting. Information gain is the information that can increase the level of certainty after splitting.
 #       InfGain = EntropyBeforeSplit - WeightedEntropyAfterSplit
 # Weighted Entropy decreases => Information Gain increases
+# When building a decision tree, we want to split the nodes in a way that decreases entropy and increases information gain.
 
 ################################################
 #splitting by sex
